@@ -10,13 +10,19 @@ import (
 )
 
 var initLogrusOnce sync.Once
+var logLevel = logrus.InfoLevel
 
 func initLogrus() {
-	level := logrus.InfoLevel
+	level := logLevel
 	if runmode.IsDebug() {
 		level = logrus.DebugLevel
 	}
 	logrus.SetLevel(level)
+}
+
+func SetLogLevel(level logrus.Level) {
+	logLevel = level
+	logrus.SetLevel(logLevel)
 }
 
 type Logger interface {
