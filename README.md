@@ -1,1 +1,2 @@
-# golangci-shared
+# shared
+Shared library
