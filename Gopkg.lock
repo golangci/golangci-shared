@@ -29,10 +29,10 @@
   version = "v1.2.1"
 
 [[projects]]
+  branch = "master"
   name = "github.com/golang/mock"
   packages = ["gomock"]
-  revision = "c34cdb4725f4c3844d095133c6e40e448b86589b"
-  version = "v1.1.1"
+  revision = "22bbf0ddf08105dfa364d0a2fa619dfa71014af5"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -66,16 +66,16 @@
   revision = "bb4de0191aa41b5507caa14b0650cdbddcd9280b"
 
 [[projects]]
+  branch = "master"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
-  revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
-  version = "v1.0.5"
+  revision = "d682213848ed68c0a260ca37d6dd5ace8423f5ba"
 
 [[projects]]
+  branch = "master"
   name = "github.com/stretchr/testify"
   packages = ["assert"]
-  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
-  version = "v1.2.1"
+  revision = "c679ae2cc0cb27ec3293fea7e254e47386f05d69"
 
 [[projects]]
   name = "github.com/stvp/rollbar"
@@ -110,6 +110,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "dcb88357092a9494d60322146bb7334fa2b96bc41d847e36ede63d4a9bc097e0"
+  inputs-digest = "41f806954c9145e874dd1fad80bc24ec9b0df7c20ab56556c96f42c02c33de45"
   solver-name = "gps-cdcl"
   solver-version = 1
