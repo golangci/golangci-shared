@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/golangci/golangci-shared/pkg/analytics"
+	"github.com/golangci/golangci-shared/pkg/events"
 )
 
 type TempDirShell struct {
@@ -40,7 +40,7 @@ func NewTempDirShell(tag string) (*TempDirShell, error) {
 
 func (s TempDirShell) Clean() {
 	if err := os.RemoveAll(s.wd); err != nil {
-		analytics.Log(context.TODO()).Warnf("Can't remove temp dir %s: %s", s.wd, err)
+		events.Log(context.TODO()).Warnf("Can't remove temp dir %s: %s", s.wd, err)
 	}
 }
 

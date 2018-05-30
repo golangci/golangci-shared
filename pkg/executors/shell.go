@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golangci/golangci-shared/pkg/analytics"
+	"github.com/golangci/golangci-shared/pkg/events"
 	"github.com/shirou/gopsutil/process"
 )
 
@@ -32,7 +32,7 @@ func trackMemoryEveryNSeconds(ctx context.Context, name string, pid int) {
 		p, _ := process.NewProcess(int32(pid))
 		mi, err := p.MemoryInfoWithContext(ctx)
 		if err != nil {
-			analytics.Log(ctx).Debugf("Can't fetch memory info on subprocess: %s", err)
+			events.Log(ctx).Debugf("Can't fetch memory info on subprocess: %s", err)
 			return
 		}
 
@@ -62,12 +62,12 @@ func trackMemoryEveryNSeconds(ctx context.Context, name string, pid int) {
 	const MB = 1024 * 1024
 	maxMB := float64(max) / MB
 	if maxMB >= 10 {
-		analytics.Log(ctx).Infof("Subprocess %q memory: got %d rss values, avg is %.1fMB, max is %.1fMB",
+		events.Log(ctx).Infof("Subprocess %q memory: got %d rss values, avg is %.1fMB, max is %.1fMB",
 			name, len(rssValues), float64(avg)/MB, maxMB)
 	}
 }
 
-func (s Shell) wait(ctx context.Context, name string, pid int, outReader io.ReadCloser) []string {
+func (s Shell) wait(ctx context.Context, name string, pid int, outReader io.Reader) []string {
 	trackCtx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	go trackMemoryEveryNSeconds(trackCtx, name, pid)
@@ -76,11 +76,11 @@ func (s Shell) wait(ctx context.Context, name string, pid int, outReader io.Read
 	lines := []string{}
 	for scanner.Scan() {
 		line := scanner.Text()
-		analytics.Log(ctx).Debugf("%s", line)
+		events.Log(ctx).Debugf("%s", line)
 		lines = append(lines, line)
 	}
 	if err := scanner.Err(); err != nil {
-		analytics.Log(ctx).Warnf("Out lines scanning error: %s", err)
+		events.Log(ctx).Warnf("Out lines scanning error: %s", err)
 	}
 
 	return lines
@@ -99,9 +99,9 @@ func (s Shell) Run(ctx context.Context, name string, args ...string) (string, er
 	go func() {
 		select {
 		case <-ctx.Done():
-			analytics.Log(ctx).Warnf("Closing Shell reader on timeout")
+			events.Log(ctx).Warnf("Closing Shell reader on timeout")
 			if cerr := outReader.Close(); cerr != nil {
-				analytics.Log(ctx).Warnf("Failed to close Shell reader on deadline: %s", cerr)
+				events.Log(ctx).Warnf("Failed to close Shell reader on deadline: %s", cerr)
 			}
 		case <-endCh:
 		}
@@ -111,9 +111,9 @@ func (s Shell) Run(ctx context.Context, name string, args ...string) (string, er
 
 	err = finish()
 
-	logger := analytics.Log(ctx).Debugf
+	logger := events.Log(ctx).Debugf
 	if err != nil {
-		logger = analytics.Log(ctx).Infof
+		logger = events.Log(ctx).Infof
 	}
 	logger("shell[%s]: %s %v executed for %s: %v", s.wd, name, args, time.Since(startedAt), err)
 

@@ -1,4 +1,4 @@
-package analytics
+package events
 
 import (
 	"os"
@@ -11,7 +11,7 @@ import (
 var mixpanelClient mixpanel.Mixpanel
 var mixpanelClientOnce sync.Once
 
-func getMixpanelClient() mixpanel.Mixpanel {
+func GetMixpanelClient() mixpanel.Mixpanel {
 	mixpanelClientOnce.Do(func() {
 		if runmode.IsProduction() {
 			apiKey := os.Getenv("MIXPANEL_API_KEY")

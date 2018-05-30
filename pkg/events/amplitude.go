@@ -1,4 +1,4 @@
-package analytics
+package events
 
 import (
 	"os"
@@ -11,7 +11,7 @@ import (
 var amplitudeClient *amplitude.Client
 var amplitudeClientOnce sync.Once
 
-func getAmplitudeClient() *amplitude.Client {
+func GetAmplitudeClient() *amplitude.Client {
 	amplitudeClientOnce.Do(func() {
 		if runmode.IsProduction() {
 			apiKey := os.Getenv("AMPLITUDE_API_KEY")
