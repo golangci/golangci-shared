@@ -5,11 +5,11 @@ import (
 	"github.com/golangci/golangci-shared/pkg/logutil"
 )
 
-func GetTracker(cfg config.Config, log logutil.Log) Tracker {
+func GetTracker(cfg config.Config, log logutil.Log, project string) Tracker {
 	env := cfg.GetString("GO_ENV")
 
 	if cfg.GetBool("ROLLBAR_ENABLED", false) {
-		return NewRollbarTracker(cfg.GetString("ROLLBAR_TOKEN"), "api", env)
+		return NewRollbarTracker(cfg.GetString("ROLLBAR_TOKEN"), project, env)
 	}
 
 	if cfg.GetBool("SENTRY_ENABLED", false) {
