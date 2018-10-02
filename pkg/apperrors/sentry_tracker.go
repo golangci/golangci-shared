@@ -3,6 +3,7 @@ package apperrors
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/getsentry/raven-go"
 	"github.com/pkg/errors"
@@ -33,11 +34,17 @@ func (t SentryTracker) Track(level Level, errorText string, ctx map[string]inter
 		interfaces = append(interfaces, raven.NewHttp(t.r))
 	}
 
+	errorParts := strings.SplitN(errorText, ": ", 2)
+	errorClass := errorParts[0]
+	if len(errorParts) == 2 {
+		tags["error_detail"] = errorParts[1]
+	}
+
 	switch level {
 	case LevelError:
-		raven.CaptureError(errors.New(errorText), tags, interfaces...)
+		raven.CaptureError(errors.New(errorClass), tags, interfaces...)
 	case LevelWarn:
-		raven.CaptureMessage(errorText, tags, interfaces...)
+		raven.CaptureMessage(errorClass, tags, interfaces...)
 	default:
 		panic("invalid level " + level)
 	}

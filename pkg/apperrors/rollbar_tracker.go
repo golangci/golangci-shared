@@ -3,6 +3,7 @@ package apperrors
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/stvp/rollbar"
 )
@@ -23,6 +24,15 @@ func NewRollbarTracker(token, project, env string) *RollbarTracker {
 
 func (t RollbarTracker) Track(level Level, errorText string, ctx map[string]interface{}) {
 	fields := []*rollbar.Field{}
+
+	errorParts := strings.SplitN(errorText, ": ", 2)
+	errorClass := errorParts[0]
+	if len(errorParts) == 2 {
+		if ctx == nil {
+			ctx = map[string]interface{}{}
+		}
+		ctx["error_detail"] = errorParts[1]
+	}
 
 	if ctx != nil {
 		fields = append(fields, &rollbar.Field{
@@ -47,9 +57,9 @@ func (t RollbarTracker) Track(level Level, errorText string, ctx map[string]inte
 	}
 
 	if t.r != nil {
-		rollbar.RequestError(rollbarLevel, t.r, errors.New(errorText), fields...)
+		rollbar.RequestError(rollbarLevel, t.r, errors.New(errorClass), fields...)
 	} else {
-		rollbar.Error(rollbarLevel, errors.New(errorText), fields...)
+		rollbar.Error(rollbarLevel, errors.New(errorClass), fields...)
 	}
 }
 
