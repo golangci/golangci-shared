@@ -36,18 +36,20 @@ func (t SentryTracker) Track(level Level, errorText string, ctx map[string]inter
 
 	errorParts := strings.SplitN(errorText, ": ", 2)
 	errorClass := errorParts[0]
-	if len(errorParts) == 2 {
-		tags["error_detail"] = errorParts[1]
-	}
+
+	p := raven.NewPacket(errorText, interfaces...)
+	p.Fingerprint = []string{errorClass}
 
 	switch level {
 	case LevelError:
-		raven.CaptureError(errors.New(errorClass), tags, interfaces...)
+		p.Level = raven.ERROR
 	case LevelWarn:
-		raven.CaptureMessage(errorClass, tags, interfaces...)
+		p.Level = raven.WARNING
 	default:
 		panic("invalid level " + level)
 	}
+
+	raven.Capture(p, tags)
 }
 
 func (t SentryTracker) WithHTTPRequest(r *http.Request) Tracker {
